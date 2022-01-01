@@ -39,7 +39,7 @@ void XD_cookies_to_string(XD_Account* a, char* str) {
     for (int i=0; i<32; i++) {
         c = &a->cookies[i];
         if (c->hash) {
-            sprintf(LINE, "%s=%s; ", LINE);
+            sprintf(LINE, "%s=%s; ", c->name, c->value);
             strncat(str, LINE, 192);
         }
     }
@@ -68,7 +68,7 @@ size_t _fetch_cb(char* dest, size_t size, size_t nmemb, void *userp) {
 
 CURLcode XD_fetch_url(XD_Account* a, char* URL, char* postdata, void (*_cb)(char*, size_t, void*)) {
     struct curl_slist* headers = NULL;
-    curl_slist_append(headers, "Accept: *//*");
+    curl_slist_append(headers, "Accept: */*");
     curl_slist_append(headers, "User-Agent: " XD_USERAGENT);
     if (a) {
         curl_slist_append(headers, "User-Agent: " XD_USERAGENT);
