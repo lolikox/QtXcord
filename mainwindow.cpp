@@ -35,10 +35,8 @@ void MainWindow::on_actionAbout_QtXcord_triggered()
     aboutQtXcord();
 }
 
-
 void MainWindow::on_actionTEST_triggered()
 {
     XD_Account* a = XD_setup_account("");
     XD_connect_account(a);
 }
-

@@ -17,9 +17,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <curl/curl.h>
+#include <json-c/json.h>
 
 #include "xdiscord.h"
-#include "frozen.h"
 
 #define XD_USERAGENT_VERSION "92.0.4515.159"
 #define XD_USERAGENT "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/" XD_USERAGENT_VERSION " Safari/537.36"
@@ -32,6 +32,7 @@ CURL* XD_curl;
 XD_Account* XD_astack[XD_MAX_ACCOUNTS];
 char XD_gateway_url[64];
 
+//
 void XD_cookies_to_string(XD_Account* a, char* str) {
     struct XD_cookie_s* c;
     char LINE[192];
@@ -70,13 +71,10 @@ CURLcode XD_fetch_url(XD_Account* a, char* URL, char* postdata, void (*_cb)(char
     struct curl_slist* headers = NULL;
     curl_slist_append(headers, "Accept: */*");
     curl_slist_append(headers, "User-Agent: " XD_USERAGENT);
-    if (a) {
-        curl_slist_append(headers, "User-Agent: " XD_USERAGENT);
-        if (a->TOKEN[0]) {
-            char str[74] = "Authorization: ";
-            strncat(str, a->TOKEN, 74);
-            headers = curl_slist_append(headers, str);
-        }
+    if (a && a->TOKEN[0]) {
+        char str[74] = "Authorization: ";
+        strncat(str, a->TOKEN, 74);
+        headers = curl_slist_append(headers, str);
     }
     if (postdata) {
         if (postdata[0] == '{') {
@@ -146,8 +144,10 @@ void XD_connect_account(XD_Account* a) {
 }
 
 void _set_gateway_cb(char* dest, size_t size, void *userp) {
-    json_scanf(dest, size, "{url: %s}", XD_gateway_url);
-    char* s = strtok(&XD_gateway_url, "\""); if (s) s = '\0'; // hotfix
+    struct json_object* j_api_gateway = json_tokener_parse(dest),
+            * j_api_gateway_url;
+    json_object_object_get_ex(j_api_gateway, "url", &j_api_gateway_url);
+    strcpy(XD_gateway_url, json_object_get_string(j_api_gateway_url));
 }
 
 XD_InitError XD_init() {

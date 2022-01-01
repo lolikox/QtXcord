@@ -11,20 +11,18 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    xdiscord.c \
-    frozen.c
+    xdiscord.c
 
 HEADERS += \
     mainwindow.h \
     qtxcord.h \
-    xdiscord.h \
-    frozen.h
+    xdiscord.h
 
 FORMS += \
     mainwindow.ui
 
 LIBS += \
-    -lcurl
+    -lcurl -ljson-c
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
