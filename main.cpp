@@ -21,6 +21,7 @@
 #include "xdiscord.h"
 
 void xcord_exit();
+void alert_discord_message_callback(char* message);
 
 int main(int argc, char *argv[])
 {
@@ -39,6 +40,7 @@ int main(int argc, char *argv[])
     }
 
     /* launch the Qt Application */
+    XD_set_message_cb(alert_discord_message_callback);
     QApplication a(argc, argv);
     {
         if (XD_init()) {
@@ -59,4 +61,8 @@ void aboutQtXcord()
 
 void xcord_exit() {
     XD_quit();
+}
+
+void alert_discord_message_callback(char* message) {
+    QMessageBox::information(NULL, "QtXcord", message);
 }

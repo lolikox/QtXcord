@@ -31,6 +31,7 @@
 CURL* XD_curl;
 XD_Account* XD_astack[XD_MAX_ACCOUNTS];
 char XD_gateway_url[64];
+void (*XD_message_cb)(char*);
 
 //
 void XD_cookies_to_string(XD_Account* a, char* str) {
@@ -53,18 +54,27 @@ struct CallbackStruct_s {
 
 size_t _fetch_cb(char* dest, size_t size, size_t nmemb, void *userp) {
     size_t b = size * nmemb;
-    /*{ // handle errors
-        char message[64] = "";
-        int code = -2;
-        json_scanf(dest, size, "{ message:%Q, code:%d }", &message, &code);
-        if (code != -2) {
-            printf("m:%s\n\n",message);
+    { // handle messages
+        struct json_object* j_dest = json_tokener_parse(dest),
+                * j_message;
+        json_object_object_get_ex(j_dest, "message", &j_message);
+        if (j_message) {
+            char* message = json_object_get_string(j_message);
+            if (XD_message_cb) {
+                XD_message_cb(message);
+            } else {
+                puts(message);
+            }
             return b;
         }
-    }*/
+    }
     struct CallbackStruct_s* s = userp;
     s->callback(dest, b, s->a);
     return b;
+}
+
+void XD_set_message_cb(void (*_message_cb)(char*)) {
+    XD_message_cb = _message_cb;
 }
 
 CURLcode XD_fetch_url(XD_Account* a, char* URL, char* postdata, void (*_cb)(char*, size_t, void*)) {

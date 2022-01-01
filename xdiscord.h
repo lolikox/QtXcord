@@ -54,6 +54,9 @@ void XD_connect_account(XD_Account* a);
 // Disconnect account and remove it from the stack.
 void XD_forget_account(XD_Account* a);
 
+// Set the internal callback for handling Discord error messages.
+void XD_set_message_cb(void (*_message_cb)(char*));
+
 // 256 MAXIMUM ACCOUNTS, memory tracking
 #define XD_MAX_ACCOUNTS 256
 // Initialize xdiscord. Returns XD_InitError
