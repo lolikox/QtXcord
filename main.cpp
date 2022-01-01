@@ -13,6 +13,9 @@
  *
  */
 
+#include <cstdio>
+#include <stdlib.h>
+#include <string.h>
 #include <QApplication>
 #include <QMessageBox>
 
@@ -43,11 +46,14 @@ int main(int argc, char *argv[])
     XD_set_message_cb(alert_discord_message_callback);
     QApplication a(argc, argv);
     {
-        if (XD_init()) {
-            QMessageBox::critical(NULL, "Error", "Failed to initialize Discord interface.");
+        XD_InitError ret = XD_init();
+        atexit(xcord_exit);
+        if (ret != XD_INIT_SUCCESS) {
+            char err[64] = "";
+            std::sprintf(err, "Failed to initialize Discord interface.\nCODE: %i", ret);
+            QMessageBox::critical(NULL, "Error", err);
             return EXIT_FAILURE;
         }
-        atexit(xcord_exit);
     }
     MainWindow w;
     w.show();

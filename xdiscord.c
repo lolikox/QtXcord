@@ -13,6 +13,7 @@
  *
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -30,7 +31,7 @@
 
 CURL* XD_curl;
 XD_Account* XD_astack[XD_MAX_ACCOUNTS];
-char XD_gateway_url[64];
+char XD_gateway_url[64] = "";
 void (*XD_message_cb)(char*);
 
 //
@@ -167,8 +168,8 @@ XD_InitError XD_init() {
         return XD_INIT_CURL_FAILURE;
     }
     CURLcode res = XD_fetch_url(NULL, XD_API_SERVER "/api/" XD_API_VERSION "/gateway", NULL, _set_gateway_cb);
-    if (res != CURLE_OK || XD_gateway_url[0] == '\0') {
-        fputs(curl_easy_strerror(res), stderr);
+    if (XD_gateway_url[0] == '\0') {
+        if (res != CURLE_OK) fputs(curl_easy_strerror(res), stderr);
         return XD_INIT_ERROR_FETCHING_GATEWAY;
     }
     puts(XD_gateway_url);
