@@ -38,7 +38,7 @@ void MainWindow::on_actionAbout_QtXcord_triggered()
 
 void MainWindow::on_actionTEST_triggered()
 {
-    XD_Account* a = XD_setup_account("OTIxMjQ0MjkxMDA1ODM3Mzgy.YbwHIA.d_v5YGSz_qCHgZnWaCkzDHmxYmE");
+    XD_Account* a = XD_setup_account("");
     XD_connect_account(a);
 }
 
